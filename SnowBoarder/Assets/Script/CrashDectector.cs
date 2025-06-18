@@ -10,7 +10,7 @@ public class CrashDectector : MonoBehaviour
     bool hasCrashed = false;
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!hasCrashed && (other.CompareTag("Ground") || other.CompareTag("Obstacle")))
+        if (!hasCrashed && (other.CompareTag("Ground") || other.CompareTag("Rock")))
         {
             hasCrashed = true;
             FindFirstObjectByType<PlayerController>().DisablePlayer();
