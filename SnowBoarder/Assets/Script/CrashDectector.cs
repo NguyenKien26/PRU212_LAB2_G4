@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class CrashDectector : MonoBehaviour
@@ -10,24 +10,31 @@ public class CrashDectector : MonoBehaviour
     bool hasCrashed = false;
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!hasPlayedSound && !hasCrashed && other.CompareTag("Ground"))
+        if (!hasCrashed && (other.CompareTag("Ground") || other.CompareTag("Obstacle")))
         {
-            hasPlayedSound = true;
             hasCrashed = true;
             FindFirstObjectByType<PlayerController>().DisablePlayer();
-            crashEffect.Play();
 
-            if (crashSFX != null)
+            if (crashEffect != null)
             {
+                crashEffect.Play();
+            }
+
+            if (!hasPlayedSound && crashSFX != null)
+            {
+                hasPlayedSound = true;
                 AudioSource.PlayClipAtPoint(crashSFX, Camera.main.transform.position);
             }
 
-            Invoke(nameof(ReloadScene), loadTime);
+            // Dừng game ngay lập tức
+            Time.timeScale = 0f;
         }
-
     }
+
     void ReloadScene()
     {
+        Time.timeScale = 1f; // Khôi phục tốc độ thời gian
         SceneManager.LoadScene(0);
     }
+
 }
