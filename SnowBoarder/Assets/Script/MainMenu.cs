@@ -11,7 +11,7 @@ public class MainMenu : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Level1");
+        SceneManager.LoadScene("LevelSelection");
     }
 
     public void Options()
