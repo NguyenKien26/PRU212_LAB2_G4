@@ -34,17 +34,41 @@ public class PauseManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // Tìm và gán lại nút pause mới (nếu có trong scene)
+        pauseButton = GameObject.Find("PauseButton")?.GetComponent<Button>();
+        if (pauseButton != null)
+        {
+            pauseButton.onClick.RemoveAllListeners(); // Xóa sự kiện cũ nếu có
+            pauseButton.onClick.AddListener(PauseGame);
+            pauseButton.gameObject.SetActive(true);
+        }
+
+        if (resumeButton == null)
+            resumeButton = GameObject.Find("ResumeButton")?.GetComponent<Button>();
+        if (returnMenuButton == null)
+            returnMenuButton = GameObject.Find("ReturnButton")?.GetComponent<Button>();
+
+        if (resumeButton != null)
+            resumeButton.onClick.AddListener(ResumeGame);
+        if (returnMenuButton != null)
+            returnMenuButton.onClick.AddListener(ReturnToMenu);
+
         if (scene.name == "MenuScene")
         {
             pausePanel.SetActive(false); // Ẩn panel khi ở Menu
             pauseButton.gameObject.SetActive(false); // Ẩn nút pause luôn
+            pausePanel?.SetActive(false);
+            pauseButton?.gameObject.SetActive(false);
         }
         else
         {
             pausePanel.SetActive(false); // Đảm bảo panel bị ẩn khi vào gameplay
             pauseButton.gameObject.SetActive(true); // Hiện nút pause
+            pausePanel?.SetActive(false);
+            pauseButton?.gameObject.SetActive(true);
         }
     }
+
 
 
     public void PauseGame()
