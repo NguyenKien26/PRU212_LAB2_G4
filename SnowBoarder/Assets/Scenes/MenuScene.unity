@@ -2942,7 +2942,8 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4284874590
-  m_fontColor: {r: 0.36862746, g: 1, b: 0.39607844, a: 1}
+    rgba: 4281204720
+  m_fontColor: {r: 0.9411765, g: 1, b: 0.1764706, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4133,6 +4134,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1459185833}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: ShowLeaderboard
+        m_MethodName: ShowHowToPlay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4707,4 +4709,7 @@ SceneRoots:
   - {fileID: 1459185834}
   - {fileID: 147707149}
   - {fileID: 364103142}
+<<<<<<< Updated upstream
   - {fileID: 1459133111}
+=======
+>>>>>>> Stashed changes
