@@ -4,8 +4,10 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     public GameObject optionPanel;
-    public GameObject howToPlayPanel;
-    public GameObject howToPlayButton;
+    public GameObject leaderboardPanel;
+    public GameObject leaderboardButton;
+
+    public LeaderboardManager leaderboardManager;
 
     public void StartGame()
     {
@@ -15,23 +17,24 @@ public class MainMenu : MonoBehaviour
     public void Options()
     {
         optionPanel.SetActive(true);
-        howToPlayButton.SetActive(false);
+        leaderboardButton.SetActive(false);
     }
 
     public void CloseOptions()
     {
         optionPanel.SetActive(false);
-        howToPlayButton.SetActive(true);
+        leaderboardButton.SetActive(true);
     }
 
-    public void ShowHowToPlay()
+    public void ShowLeaderboard()
     {
-        howToPlayPanel.SetActive(true);
+        leaderboardPanel.SetActive(true);
+        leaderboardManager.LoadLeaderboard(); 
     }
 
-    public void CloseHowToPlay()
+    public void CloseLeaderboard()
     {
-        howToPlayPanel.SetActive(false);
+        leaderboardPanel.SetActive(false);
     }
 
     public void QuitGame()
