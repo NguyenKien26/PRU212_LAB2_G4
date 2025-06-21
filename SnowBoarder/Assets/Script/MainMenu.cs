@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("LevelSelection");
     }
 
-    public void Options()
+    public void ShowOptions()
     {
         optionPanel.SetActive(true);
         howToPlayButton.SetActive(false);
@@ -21,8 +21,6 @@ public class MainMenu : MonoBehaviour
 
     public void CloseOptions()
     {
-        optionPanel.SetActive(false);
-        
         howToPlayButton.SetActive(true);
         optionPanel.SetActive(false);
     }
@@ -36,6 +34,7 @@ public class MainMenu : MonoBehaviour
     public void CloseHowToPlay()
     {
         howToPlayPanel.SetActive(false);
+        optionButton.SetActive(true);
     }
 
     public void QuitGame()
