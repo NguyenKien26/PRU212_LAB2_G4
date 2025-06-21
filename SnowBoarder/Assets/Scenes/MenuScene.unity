@@ -578,6 +578,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1459185833}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: CloseLeaderboard
+        m_MethodName: ShowHowToPlay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1743,6 +1744,7 @@ GameObject:
   - component: {fileID: 806691010}
   m_Layer: 5
   m_Name: LeaderboardPanel
+  m_Name: HowToPlayPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2589,6 +2591,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Leaderboards
+  m_text: 'How to play '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ef95b348a6117454f8a902ea1a6b4974, type: 2}
   m_sharedMaterial: {fileID: 7614427479174529916, guid: ef95b348a6117454f8a902ea1a6b4974, type: 2}
@@ -2888,6 +2891,7 @@ GameObject:
   - component: {fileID: 1203376972}
   m_Layer: 5
   m_Name: Text (TMP)
+  m_Name: TitleText (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2933,6 +2937,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Your score
+  m_text: How to play
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ef95b348a6117454f8a902ea1a6b4974, type: 2}
   m_sharedMaterial: {fileID: 7614427479174529916, guid: ef95b348a6117454f8a902ea1a6b4974, type: 2}
@@ -2944,6 +2949,7 @@ MonoBehaviour:
     rgba: 4284874590
     rgba: 4281204720
   m_fontColor: {r: 0.9411765, g: 1, b: 0.1764706, a: 1}
+  m_fontColor: {r: 0.36862746, g: 1, b: 0.39607844, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3376,6 +3382,7 @@ GameObject:
   - component: {fileID: 1351445792}
   m_Layer: 5
   m_Name: ScoreText (TMP)
+  m_Name: BodyText (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3421,6 +3428,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Score text \n\n"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ef95b348a6117454f8a902ea1a6b4974, type: 2}
   m_sharedMaterial: {fileID: 7614427479174529916, guid: ef95b348a6117454f8a902ea1a6b4974, type: 2}
@@ -3821,6 +3829,8 @@ MonoBehaviour:
   leaderboardPanel: {fileID: 806691008}
   leaderboardButton: {fileID: 1592751589}
   leaderboardManager: {fileID: 1459133110}
+  howToPlayPanel: {fileID: 806691008}
+  howToPlayButton: {fileID: 1592751589}
 --- !u!4 &1459185834
 Transform:
   m_ObjectHideFlags: 0
@@ -4061,6 +4071,7 @@ GameObject:
   - component: {fileID: 1592751591}
   m_Layer: 5
   m_Name: LeaderboardButton
+  m_Name: HowToPlayButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4134,7 +4145,6 @@ MonoBehaviour:
       - m_Target: {fileID: 1459185833}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
         m_MethodName: ShowLeaderboard
-        m_MethodName: ShowHowToPlay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
