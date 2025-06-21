@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     public GameObject optionPanel;
+    public GameObject optionButton;
     public GameObject howToPlayPanel;
     public GameObject howToPlayButton;
 
@@ -21,12 +22,15 @@ public class MainMenu : MonoBehaviour
     public void CloseOptions()
     {
         optionPanel.SetActive(false);
+        
         howToPlayButton.SetActive(true);
+        optionPanel.SetActive(false);
     }
 
     public void ShowHowToPlay()
     {
         howToPlayPanel.SetActive(true);
+        optionButton.SetActive(false);
     }
 
     public void CloseHowToPlay()
