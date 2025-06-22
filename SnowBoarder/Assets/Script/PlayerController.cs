@@ -181,11 +181,13 @@ public class PlayerController : MonoBehaviour
     {
         currentDistance = transform.position.x - initialXPosition;
         if (currentDistance < 0) currentDistance = 0;
+
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.UpdateDistance(currentDistance);
+            GameManager.Instance.UpdateDistanceAndScore(currentDistance);
         }
     }
+
 
     void CheckHeadCrash()
     {

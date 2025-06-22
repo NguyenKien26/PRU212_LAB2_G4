@@ -21,17 +21,20 @@ public class LevelScore
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance; // Singleton
+    public static GameManager Instance;
 
     [SerializeField] private string scoreFileName = "scores.json";
+    [SerializeField] private float scorePerMeter = 10f;
+
     private ScoreData scoreData;
     public int currentScore = 0;
     public float currentDistance = 0f;
-    public int currentLevel = 1; // Mặc định bắt đầu từ level 1
+    public int currentLevel = 1;
+
+    private float lastDistance = 0f; // <--- Thêm dòng này
 
     void Awake()
     {
-        // Thiết lập Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -44,13 +47,11 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Tải dữ liệu JSON
         LoadScoreData();
     }
 
     void Start()
     {
-        // Đặt tên PC nếu chưa có
         if (string.IsNullOrEmpty(scoreData.playerName))
         {
             scoreData.playerName = SystemInfo.deviceName;
@@ -58,48 +59,52 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Thêm điểm (gọi từ PlayerController khi lộn nhào)
     public void AddScore(int points)
     {
         currentScore += points;
-        //Debug.Log($"Current Score: {currentScore}");
     }
 
-    // Cập nhật khoảng cách hiện tại
     public void UpdateDistance(float distance)
     {
         currentDistance = Mathf.Max(currentDistance, distance);
-        //Debug.Log($"Current Distance: {currentDistance}");
     }
 
-    // Xử lý khi cán đích
+    // ✅ Hàm mới: Tính điểm theo khoảng cách
+    public void UpdateDistanceAndScore(float currentX)
+    {
+        float delta = currentX - lastDistance;
+        if (delta >= 1f)
+        {
+            int addScore = Mathf.FloorToInt(delta * scorePerMeter);
+            AddScore(addScore);
+            lastDistance = currentX;
+        }
+
+        UpdateDistance(currentX);
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateScore(currentScore);
+            UIManager.Instance.UpdateDistance(currentDistance);
+        }
+    }
+
+    public void ResetScoreAndDistance()
+    {
+        currentScore = 0;
+        currentDistance = 0f;
+        lastDistance = 0f;
+    }
+
     public void ReachFinish(int score, float distance)
     {
-        // Cập nhật dữ liệu level với isFinished = true
         UpdateLevelData(currentLevel, score, distance, true);
-
-        // Chuyển sang level tiếp theo
-        //currentLevel++;
-        //if (currentLevel <= 3) // Giả sử có 3 level
-        //{
-        //    SceneManager.LoadScene($"Level{currentLevel}");
-        //    currentScore = 0; // Reset điểm
-        //    currentDistance = 0f; // Reset khoảng cách
-        //}
-        //else
-        //{
-        //    Debug.Log("Game Completed! Back to LevelSelection.");
-        //    SceneManager.LoadScene("LevelSelection");
-        //}
     }
 
-    // Xử lý khi game over
     public void GameOver(int score, float distance)
     {
         UpdateLevelData(currentLevel, score, distance, false);
 
-
-        // Hiện GameOver UI (không reload scene ngay)
         GameOverManager gameOverManager = FindAnyObjectByType<GameOverManager>();
         if (gameOverManager != null)
         {
@@ -111,15 +116,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void ResetScoreAndDistance()
-    {
-        currentScore = 0;
-        currentDistance = 0f;
-    }
-
-
-
-    // Cập nhật điểm cao nhất, khoảng cách max, và trạng thái hoàn thành
     private void UpdateLevelData(int level, int score, float distance, bool finished)
     {
         LevelScore levelScore = scoreData.scores.Find(s => s.level == level);
@@ -141,26 +137,23 @@ public class GameManager : MonoBehaviour
             if (distance > levelScore.highestDistance)
                 levelScore.highestDistance = distance;
             if (finished)
-                levelScore.isFinished = true; // Chỉ đặt true nếu cán đích
+                levelScore.isFinished = true;
         }
         SaveScoreData();
     }
 
-    // Kiểm tra xem level có được mở khóa không
     public bool IsLevelUnlocked(int level)
     {
-        if (level == 1) return true; // Level 1 luôn mở
+        if (level == 1) return true;
         LevelScore previousLevelScore = scoreData.scores.Find(s => s.level == level - 1);
         return previousLevelScore != null && previousLevelScore.isFinished;
     }
 
-    // Lấy dữ liệu level
     public LevelScore GetLevelData(int level)
     {
         return scoreData.scores.Find(s => s.level == level);
     }
 
-    // Khởi tạo dữ liệu mặc định nếu file không tồn tại hoặc bị lỗi
     private ScoreData CreateDefaultScoreData()
     {
         return new ScoreData
@@ -175,21 +168,18 @@ public class GameManager : MonoBehaviour
         };
     }
 
-    // Đọc dữ liệu JSON từ file
     private void LoadScoreData()
     {
         string filePath = Path.Combine(Application.persistentDataPath, scoreFileName);
 
         try
         {
-            // Kiểm tra xem file có tồn tại không
             if (File.Exists(filePath))
             {
                 string json = File.ReadAllText(filePath);
                 if (!string.IsNullOrEmpty(json))
                 {
                     scoreData = JsonUtility.FromJson<ScoreData>(json);
-                    // Kiểm tra xem dữ liệu có hợp lệ không
                     if (scoreData == null || scoreData.scores == null)
                     {
                         Debug.LogWarning("File JSON bị hỏng, tạo dữ liệu mặc định.");
@@ -219,24 +209,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Lưu dữ liệu JSON vào file
     private void SaveScoreData()
     {
         string filePath = Path.Combine(Application.persistentDataPath, scoreFileName);
 
         try
         {
-            // Đảm bảo scoreData không null
             if (scoreData == null)
             {
                 Debug.LogWarning("ScoreData null, khởi tạo dữ liệu mặc định trước khi lưu.");
                 scoreData = CreateDefaultScoreData();
             }
 
-            // Chuyển dữ liệu thành JSON
             string json = JsonUtility.ToJson(scoreData, true);
-
-            // Ghi file
             File.WriteAllText(filePath, json);
             Debug.Log($"Lưu dữ liệu thành công tại: {filePath}");
         }
