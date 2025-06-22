@@ -7734,9 +7734,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreFileName: scores.json
   scorePerMeter: 10
+  scoreText: {fileID: 0}
+  distanceText: {fileID: 0}
+  speedText: {fileID: 0}
+  floatingTextPrefab: {fileID: 0}
+  slowSpeedThreshold: 5
+  defaultSpeedThreshold: 10
+  boostSpeedThreshold: 15
   currentScore: 0
   currentDistance: 0
-  currentLevel: 1
+  currentSpeed: 0
+  currentLevel: 2
 --- !u!4 &634024926
 Transform:
   m_ObjectHideFlags: 0
@@ -22736,7 +22744,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnerPrefab: {fileID: 7844911759471448344, guid: 2ed8425eb08b05c4695e80b795fd0e3d, type: 3}
-  spawnPositions: []
+  baseSpawnDistance: 2
+  spawnRange: 0.3
+  speedFactor: 3
+  yOffset: 0.5
+  minSpawnInterval: 0.05
+  maxSpawnInterval: 0.15
+  maxSpawners: 10
+  maxPredictionDistance: 5
 --- !u!4 &1995837255
 Transform:
   m_ObjectHideFlags: 0

@@ -5622,12 +5622,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnerPrefab: {fileID: 7844911759471448344, guid: 2ed8425eb08b05c4695e80b795fd0e3d, type: 3}
-  spawnPositions:
-  - {x: 36, y: -23}
-  - {x: 67, y: -47}
-  - {x: 109, y: -36}
-  - {x: 166, y: -42}
-  - {x: 220, y: -57}
+  baseSpawnDistance: 2
+  spawnRange: 0.5
+  speedFactor: 1
+  yOffset: 0.5
+  minSpawnInterval: 2
+  maxSpawnInterval: 5
+  maxSpawners: 5
+  maxPredictionDistance: 3
 --- !u!4 &212534202
 Transform:
   m_ObjectHideFlags: 0

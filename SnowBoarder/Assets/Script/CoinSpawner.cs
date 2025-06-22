@@ -4,6 +4,7 @@ public class CoinSpawner : MonoBehaviour
 {
     [Header("Coin Prefab")]
     public GameObject coinPrefab;
+
     [Header("Matrix Settings")]
     public int minRows = 1;
     public int maxRows = 4;
@@ -13,7 +14,7 @@ public class CoinSpawner : MonoBehaviour
 
     public void SpawnCoinsAt(Vector2 position)
     {
-        // Random số hàng và cột cho matrix coin
+        // Random số hàng và cột cho ma trận coin
         int rows = Random.Range(minRows, maxRows + 1);
         int cols = Random.Range(minCols, maxCols + 1);
 

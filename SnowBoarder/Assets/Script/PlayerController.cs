@@ -13,8 +13,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] float jumpForce;
-    [SerializeField] LayerMask groundLayer;
-    [SerializeField] Transform groundCheck;
+    public LayerMask groundLayer;
+    public Transform groundCheck;
     float groundCheckRadius = 0.2f;
 
     [Header("Collision")]
@@ -165,7 +165,7 @@ public class PlayerController : MonoBehaviour
             float t = elapsedTime / flipDuration;
             float currentAngle = Mathf.Lerp(startAngle, endAngle, t);
             transform.eulerAngles = new Vector3(0, 0, currentAngle);
-            Debug.Log($"Flipping: Angle: {currentAngle}, Time: {elapsedTime}/{flipDuration}");
+            //Debug.Log($"Flipping: Angle: {currentAngle}, Time: {elapsedTime}/{flipDuration}");
             yield return null;
         }
 

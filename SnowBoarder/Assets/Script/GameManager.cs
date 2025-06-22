@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        canvas = FindObjectOfType<Canvas>();
+        canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             Debug.LogWarning("Canvas not found in scene during Awake! Will try to find in Start.");
@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
 
         if (canvas == null)
         {
-            canvas = FindObjectOfType<Canvas>();
+            canvas = FindFirstObjectByType<Canvas>();
             if (canvas != null)
             {
                 DontDestroyOnLoad(canvas.gameObject);
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(message) && canvas != null && floatingTextPrefab != null)
         {
-            PlayerController player = FindObjectOfType<PlayerController>();
+            PlayerController player = FindFirstObjectByType<PlayerController>();
             if (player != null)
             {
                 Transform head = player.transform.Find("Head");
