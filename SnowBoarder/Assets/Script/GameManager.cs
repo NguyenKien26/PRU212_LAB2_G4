@@ -36,9 +36,11 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            Debug.Log("GameManager created.");
         }
         else
         {
+            Debug.LogWarning("Duplicate GameManager destroyed.");
             Destroy(gameObject);
         }
 
@@ -94,14 +96,28 @@ public class GameManager : MonoBehaviour
     // Xử lý khi game over
     public void GameOver(int score, float distance)
     {
-        // Cập nhật dữ liệu level với isFinished = false
         UpdateLevelData(currentLevel, score, distance, false);
 
-        // Reload level hiện tại
-        SceneManager.LoadScene($"Level{currentLevel}");
-        currentScore = 0; // Reset điểm
-        currentDistance = 0f; // Reset khoảng cách
+
+        // Hiện GameOver UI (không reload scene ngay)
+        GameOverManager gameOverManager = FindAnyObjectByType<GameOverManager>();
+        if (gameOverManager != null)
+        {
+            gameOverManager.ShowGameOver(currentScore, currentDistance);
+        }
+        else
+        {
+            Debug.LogError("GameOverManager not found!");
+        }
     }
+
+    public void ResetScoreAndDistance()
+    {
+        currentScore = 0;
+        currentDistance = 0f;
+    }
+
+
 
     // Cập nhật điểm cao nhất, khoảng cách max, và trạng thái hoàn thành
     private void UpdateLevelData(int level, int score, float distance, bool finished)
