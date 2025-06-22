@@ -79,18 +79,18 @@ public class GameManager : MonoBehaviour
         UpdateLevelData(currentLevel, score, distance, true);
 
         // Chuyển sang level tiếp theo
-        currentLevel++;
-        if (currentLevel <= 3) // Giả sử có 3 level
-        {
-            SceneManager.LoadScene($"Level{currentLevel}");
-            currentScore = 0; // Reset điểm
-            currentDistance = 0f; // Reset khoảng cách
-        }
-        else
-        {
-            Debug.Log("Game Completed! Back to LevelSelection.");
-            SceneManager.LoadScene("LevelSelection");
-        }
+        //currentLevel++;
+        //if (currentLevel <= 3) // Giả sử có 3 level
+        //{
+        //    SceneManager.LoadScene($"Level{currentLevel}");
+        //    currentScore = 0; // Reset điểm
+        //    currentDistance = 0f; // Reset khoảng cách
+        //}
+        //else
+        //{
+        //    Debug.Log("Game Completed! Back to LevelSelection.");
+        //    SceneManager.LoadScene("LevelSelection");
+        //}
     }
 
     // Xử lý khi game over
