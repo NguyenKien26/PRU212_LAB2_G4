@@ -198,6 +198,7 @@ public class PlayerController : MonoBehaviour
         currentDistance = transform.position.x - initialXPosition;
         if (currentDistance < 0) currentDistance = 0;
 
+<<<<<<< Updated upstream
         float speed = rb2d.linearVelocity.x;
         if (speed < 0) speed = 0;
 
@@ -205,8 +206,14 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.UpdateDistance(currentDistance);
             GameManager.Instance.UpdateSpeed(speed);
+=======
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UpdateDistanceAndScore(currentDistance);
+>>>>>>> Stashed changes
         }
     }
+
 
     void CheckHeadCrash()
     {

@@ -22,27 +22,36 @@ public class LevelScore
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance; // Singleton
+    public static GameManager Instance;
 
     [SerializeField] private string scoreFileName = "scores.json";
+<<<<<<< Updated upstream
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
     [SerializeField] private TextMeshProUGUI distanceText;
     [SerializeField] private TextMeshProUGUI speedText;
     [SerializeField] private TextMeshProUGUI congratText;
     [SerializeField] private GameObject floatingTextPrefab;
+=======
+    [SerializeField] private float scorePerMeter = 10f;
+>>>>>>> Stashed changes
 
     private ScoreData scoreData;
     public int currentScore = 0;
     public float currentDistance = 0f;
+<<<<<<< Updated upstream
     public float currentSpeed = 0f;
     public int currentLevel = 1; // Mặc định bắt đầu từ level 1
     private Canvas canvas;
     private List<Coroutine> activeFloatingTextCoroutines = new List<Coroutine>(); // Lưu các coroutine FloatingText
+=======
+    public int currentLevel = 1;
+
+    private float lastDistance = 0f; // <--- Thêm dòng này
+>>>>>>> Stashed changes
 
     void Awake()
     {
-        // Thiết lập Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -71,7 +80,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Đặt tên PC nếu chưa có
         if (string.IsNullOrEmpty(scoreData.playerName))
         {
             scoreData.playerName = SystemInfo.deviceName;
@@ -102,6 +110,7 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
+<<<<<<< Updated upstream
     // Kiểm tra các tham chiếu TextMeshProUGUI
     private void CheckTextReferences()
     {
@@ -250,11 +259,48 @@ public class GameManager : MonoBehaviour
             }
         }
         activeFloatingTextCoroutines.Clear();
+=======
+    public void AddScore(int points)
+    {
+        currentScore += points;
     }
 
-    // Xử lý khi cán đích
+    public void UpdateDistance(float distance)
+    {
+        currentDistance = Mathf.Max(currentDistance, distance);
+>>>>>>> Stashed changes
+    }
+
+    // ✅ Hàm mới: Tính điểm theo khoảng cách
+    public void UpdateDistanceAndScore(float currentX)
+    {
+        float delta = currentX - lastDistance;
+        if (delta >= 1f)
+        {
+            int addScore = Mathf.FloorToInt(delta * scorePerMeter);
+            AddScore(addScore);
+            lastDistance = currentX;
+        }
+
+        UpdateDistance(currentX);
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateScore(currentScore);
+            UIManager.Instance.UpdateDistance(currentDistance);
+        }
+    }
+
+    public void ResetScoreAndDistance()
+    {
+        currentScore = 0;
+        currentDistance = 0f;
+        lastDistance = 0f;
+    }
+
     public void ReachFinish(int score, float distance)
     {
+<<<<<<< Updated upstream
         StopAllFloatingTextCoroutines(); // Dừng các FloatingText trước khi chuyển scene
         UpdateLevelData(currentLevel, score, distance, true);
         currentLevel++;
@@ -283,9 +329,11 @@ public class GameManager : MonoBehaviour
         {
             congratText.gameObject.SetActive(false);
         }
+=======
+        UpdateLevelData(currentLevel, score, distance, true);
+>>>>>>> Stashed changes
     }
 
-    // Xử lý khi game over
     public void GameOver(int score, float distance)
     {
         StopAllFloatingTextCoroutines(); // Dừng các FloatingText trước khi chuyển scene
@@ -294,6 +342,7 @@ public class GameManager : MonoBehaviour
         ResetLevel();
     }
 
+<<<<<<< Updated upstream
     // Đặt lại điểm số, khoảng cách, và tốc độ
     public void ResetScoreAndDistance()
     {
@@ -302,6 +351,10 @@ public class GameManager : MonoBehaviour
         currentDistance = 0f;
         currentSpeed = 0f;
         if (congratText != null)
+=======
+        GameOverManager gameOverManager = FindAnyObjectByType<GameOverManager>();
+        if (gameOverManager != null)
+>>>>>>> Stashed changes
         {
             congratText.gameObject.SetActive(false);
         }
@@ -323,6 +376,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     // Reset dữ liệu level
     private void ResetLevel()
     {
@@ -332,6 +386,8 @@ public class GameManager : MonoBehaviour
     }
 
     // Cập nhật dữ liệu level
+=======
+>>>>>>> Stashed changes
     private void UpdateLevelData(int level, int score, float distance, bool finished)
     {
         LevelScore levelScore = scoreData.scores.Find(s => s.level == level);
@@ -358,7 +414,6 @@ public class GameManager : MonoBehaviour
         SaveScoreData();
     }
 
-    // Kiểm tra xem level có được mở khóa không
     public bool IsLevelUnlocked(int level)
     {
         if (level == 1) return true;
@@ -366,13 +421,15 @@ public class GameManager : MonoBehaviour
         return previousLevelScore != null && previousLevelScore.isFinished;
     }
 
-    // Lấy dữ liệu level
     public LevelScore GetLevelData(int level)
     {
         return scoreData.scores.Find(s => s.level == level);
     }
 
+<<<<<<< Updated upstream
     // Khởi tạo dữ liệu mặc định
+=======
+>>>>>>> Stashed changes
     private ScoreData CreateDefaultScoreData()
     {
         return new ScoreData
@@ -387,7 +444,10 @@ public class GameManager : MonoBehaviour
         };
     }
 
+<<<<<<< Updated upstream
     // Đọc dữ liệu JSON
+=======
+>>>>>>> Stashed changes
     private void LoadScoreData()
     {
         string filePath = Path.Combine(Application.persistentDataPath, scoreFileName);
@@ -428,7 +488,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     // Lưu dữ liệu JSON
+=======
+>>>>>>> Stashed changes
     private void SaveScoreData()
     {
         string filePath = Path.Combine(Application.persistentDataPath, scoreFileName);
@@ -439,6 +502,10 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("ScoreData null, khởi tạo dữ liệu mặc định.");
                 scoreData = CreateDefaultScoreData();
             }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
             string json = JsonUtility.ToJson(scoreData, true);
             File.WriteAllText(filePath, json);
             Debug.Log($"Lưu dữ liệu thành công tại: {filePath}");

@@ -36405,6 +36405,63 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &1642527847
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1102.9146
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 820.46136
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.5307555
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 557219466623146372, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6564820105901219266, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+      propertyPath: m_Name
+      value: UIManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
 --- !u!1 &1660417360
 GameObject:
   m_ObjectHideFlags: 0
@@ -39070,12 +39127,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scoreFileName: scores.json
+<<<<<<< Updated upstream
   scoreText: {fileID: 728222820}
   highScoreText: {fileID: 0}
   distanceText: {fileID: 1045609303}
   speedText: {fileID: 36741165}
   congratText: {fileID: 984887896}
   floatingTextPrefab: {fileID: 1021655213}
+=======
+  scorePerMeter: 10
+>>>>>>> Stashed changes
   currentScore: 0
   currentDistance: 0
   currentSpeed: 0
@@ -39567,6 +39628,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 829d036d420290940ba65210bcde6560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< Updated upstream
   winPanel: {fileID: 7590498372294624757}
   toLevelSelectionButton: {fileID: 7590498372294624760}
   backToMenuButton: {fileID: 7590498372294624759}
@@ -39610,6 +39672,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+=======
+>>>>>>> Stashed changes
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -39628,4 +39692,8 @@ SceneRoots:
   - {fileID: 905332994}
   - {fileID: 133361590833400907}
   - {fileID: 7590498372294624754}
+<<<<<<< Updated upstream
   - {fileID: 288730494}
+=======
+  - {fileID: 1642527847}
+>>>>>>> Stashed changes
