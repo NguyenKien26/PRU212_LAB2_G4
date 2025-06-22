@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
@@ -68,6 +67,13 @@ public class PlayerController : MonoBehaviour
             HandleFlip();
             UpdateDistance();
             CheckHeadCrash();
+
+            // Cập nhật tốc độ cho GameManager
+            if (surfaceEffector != null)
+            {
+                GameManager.Instance.UpdateSpeed(surfaceEffector.speed);
+                Debug.Log($"Updating speed: {surfaceEffector.speed}");
+            }
         }
         else if (GameManager.Instance == null)
         {
@@ -168,8 +174,10 @@ public class PlayerController : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.AddScore(flipScore);
-            Debug.Log($"Flip completed! Earned {flipScore} points.");
+            Transform head = transform.Find("Head");
+            Vector3 flipPosition = head != null ? head.position : transform.position + Vector3.up * 1f;
+            GameManager.Instance.AddScore(flipScore, flipPosition, "Super Flip!", Color.red);
+            Debug.Log($"Flip completed! Earned {flipScore} points at position {flipPosition}.");
         }
         else
         {
@@ -187,7 +195,6 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.UpdateDistanceAndScore(currentDistance);
         }
     }
-
 
     void CheckHeadCrash()
     {
