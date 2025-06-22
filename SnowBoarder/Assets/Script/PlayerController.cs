@@ -211,6 +211,11 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.UpdateDistanceAndScore(currentDistance);
 >>>>>>> Stashed changes
+=======
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UpdateDistanceAndScore(currentDistance);
+>>>>>>> Stashed changes
         }
     }
 

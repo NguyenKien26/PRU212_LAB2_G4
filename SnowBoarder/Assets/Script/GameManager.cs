@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
 
         // Thử tìm Canvas lại nếu chưa có
         if (canvas == null)
+=======
         {
             canvas = FindObjectOfType<Canvas>();
             if (canvas != null)
