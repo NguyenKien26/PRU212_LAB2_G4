@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 [System.Serializable]
 public class ScoreData
@@ -24,10 +25,19 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance; // Singleton
 
     [SerializeField] private string scoreFileName = "scores.json";
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI highScoreText;
+    [SerializeField] private TextMeshProUGUI distanceText;
+    [SerializeField] private TextMeshProUGUI speedText;
+    [SerializeField] private TextMeshProUGUI congratText;
+    [SerializeField] private GameObject floatingTextPrefab;
+
     private ScoreData scoreData;
     public int currentScore = 0;
     public float currentDistance = 0f;
+    public float currentSpeed = 0f;
     public int currentLevel = 1; // Mặc định bắt đầu từ level 1
+    private Canvas canvas;
 
     void Awake()
     {
@@ -40,10 +50,28 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
 
-        // Tải dữ liệu JSON
+        canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogError("Canvas not found in scene!");
+        }
+
         LoadScoreData();
+        if (congratText != null)
+        {
+            congratText.gameObject.SetActive(false); // Ẩn CongratText ban đầu
+        }
+        else
+        {
+            Debug.LogWarning("CongratText is not assigned in Inspector!");
+        }
+
+        // Kiểm tra các TextMeshProUGUI
+        CheckTextReferences();
+        UpdateUI();
     }
 
     void Start()
@@ -56,54 +84,172 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Thêm điểm (gọi từ PlayerController khi lộn nhào)
-    public void AddScore(int points)
+    // Kiểm tra các tham chiếu TextMeshProUGUI
+    private void CheckTextReferences()
     {
-        currentScore += points;
-        //Debug.Log($"Current Score: {currentScore}");
+        if (scoreText == null) Debug.LogError("ScoreText is not assigned in Inspector!");
+        if (highScoreText == null) Debug.LogError("HighScoreText is not assigned in Inspector!");
+        if (distanceText == null) Debug.LogError("DistanceText is not assigned in Inspector!");
+        if (speedText == null) Debug.LogError("SpeedText is not assigned in Inspector!");
+        if (floatingTextPrefab == null) Debug.LogError("FloatingTextPrefab is not assigned in Inspector!");
     }
 
-    // Cập nhật khoảng cách hiện tại
+    // Thêm điểm (gọi khi lộn nhào hoặc ăn coin)
+    public void AddScore(int points, Vector3 worldPosition, string message, Color color)
+    {
+        Debug.Log($"AddScore called with points: {points}, message: {message}, caller: {new System.Diagnostics.StackTrace().ToString()}");
+        currentScore += points;
+        UpdateLevelData(currentLevel, currentScore, currentDistance, false);
+        UpdateUI();
+        if (canvas != null && floatingTextPrefab != null)
+        {
+            ShowFloatingText(worldPosition, message, color);
+        }
+    }
+
+    // Cập nhật khoảng cách
     public void UpdateDistance(float distance)
     {
         currentDistance = Mathf.Max(currentDistance, distance);
-        //Debug.Log($"Current Distance: {currentDistance}");
+        UpdateUI();
+    }
+
+    // Cập nhật tốc độ
+    public void UpdateSpeed(float speed)
+    {
+        currentSpeed = speed;
+        UpdateUI();
+    }
+
+    // Cập nhật UI
+    private void UpdateUI()
+    {
+        LevelScore levelScore = GetLevelData(currentLevel);
+        int highScore = levelScore != null ? levelScore.highestScore : 0;
+
+        if (scoreText != null)
+            scoreText.text = $"Score: {currentScore}";
+        else
+            Debug.LogWarning("Cannot update ScoreText: reference is null");
+
+        if (highScoreText != null)
+            highScoreText.text = $"High Score: {highScore}";
+        else
+            Debug.LogWarning("Cannot update HighScoreText: reference is null");
+
+        if (distanceText != null)
+            distanceText.text = $"Distance: {currentDistance:F1} m";
+        else
+            Debug.LogWarning("Cannot update DistanceText: reference is null");
+
+        if (speedText != null)
+            speedText.text = $"Speed: {currentSpeed:F1} m/s";
+        else
+            Debug.LogWarning("Cannot update SpeedText: reference is null");
+    }
+
+    // Hiển thị floating text
+    private void ShowFloatingText(Vector3 worldPosition, string message, Color color)
+    {
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.GetComponent<RectTransform>(),
+            screenPos,
+            canvas.worldCamera,
+            out Vector2 localPos
+        );
+        GameObject floatingText = Instantiate(floatingTextPrefab, canvas.transform);
+        floatingText.GetComponent<RectTransform>().localPosition = localPos;
+        TextMeshProUGUI textComponent = floatingText.GetComponent<TextMeshProUGUI>();
+
+        if (textComponent != null)
+        {
+            textComponent.text = message;
+            textComponent.color = color;
+            floatingText.SetActive(true);
+            StartCoroutine(AnimateFloatingText(floatingText));
+        }
+        else
+        {
+            Debug.LogError("FloatingTextPrefab is missing TextMeshProUGUI component!");
+            Destroy(floatingText);
+        }
+    }
+
+    private System.Collections.IEnumerator AnimateFloatingText(GameObject floatingText)
+    {
+        float duration = 1f;
+        float elapsed = 0f;
+        RectTransform rectTransform = floatingText.GetComponent<RectTransform>();
+        Vector3 startPos = rectTransform.localPosition;
+        Vector3 endPos = startPos + new Vector3(0, 50, 0);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            rectTransform.localPosition = Vector3.Lerp(startPos, endPos, t);
+            floatingText.GetComponent<TextMeshProUGUI>().alpha = 1 - t;
+            yield return null;
+        }
+
+        Destroy(floatingText);
     }
 
     // Xử lý khi cán đích
     public void ReachFinish(int score, float distance)
     {
-        // Cập nhật dữ liệu level với isFinished = true
         UpdateLevelData(currentLevel, score, distance, true);
-
-        // Chuyển sang level tiếp theo
         currentLevel++;
         if (currentLevel <= 3) // Giả sử có 3 level
         {
             SceneManager.LoadScene($"Level{currentLevel}");
-            currentScore = 0; // Reset điểm
-            currentDistance = 0f; // Reset khoảng cách
+            ResetLevel();
         }
         else
         {
-            Debug.Log("Game Completed! Back to LevelSelection.");
+            if (congratText != null)
+            {
+                congratText.text = "Chúc mừng! Bạn đã phá đảo!";
+                congratText.gameObject.SetActive(true);
+                StartCoroutine(HideCongratTextAfterDelay(3f));
+            }
             SceneManager.LoadScene("LevelSelection");
+        }
+    }
+
+    // Ẩn CongratText sau một khoảng thời gian
+    private System.Collections.IEnumerator HideCongratTextAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (congratText != null)
+        {
+            congratText.gameObject.SetActive(false);
         }
     }
 
     // Xử lý khi game over
     public void GameOver(int score, float distance)
     {
-        // Cập nhật dữ liệu level với isFinished = false
         UpdateLevelData(currentLevel, score, distance, false);
-
-        // Reload level hiện tại
         SceneManager.LoadScene($"Level{currentLevel}");
-        currentScore = 0; // Reset điểm
-        currentDistance = 0f; // Reset khoảng cách
+        ResetLevel();
     }
 
-    // Cập nhật điểm cao nhất, khoảng cách max, và trạng thái hoàn thành
+    // Reset dữ liệu level
+    private void ResetLevel()
+    {
+        currentScore = 0;
+        currentDistance = 0f;
+        currentSpeed = 0f;
+        if (congratText != null)
+        {
+            congratText.gameObject.SetActive(false);
+        }
+        UpdateUI();
+    }
+
+    // Cập nhật dữ liệu level
     private void UpdateLevelData(int level, int score, float distance, bool finished)
     {
         LevelScore levelScore = scoreData.scores.Find(s => s.level == level);
@@ -125,7 +271,7 @@ public class GameManager : MonoBehaviour
             if (distance > levelScore.highestDistance)
                 levelScore.highestDistance = distance;
             if (finished)
-                levelScore.isFinished = true; // Chỉ đặt true nếu cán đích
+                levelScore.isFinished = true;
         }
         SaveScoreData();
     }
@@ -133,7 +279,7 @@ public class GameManager : MonoBehaviour
     // Kiểm tra xem level có được mở khóa không
     public bool IsLevelUnlocked(int level)
     {
-        if (level == 1) return true; // Level 1 luôn mở
+        if (level == 1) return true;
         LevelScore previousLevelScore = scoreData.scores.Find(s => s.level == level - 1);
         return previousLevelScore != null && previousLevelScore.isFinished;
     }
@@ -144,7 +290,7 @@ public class GameManager : MonoBehaviour
         return scoreData.scores.Find(s => s.level == level);
     }
 
-    // Khởi tạo dữ liệu mặc định nếu file không tồn tại hoặc bị lỗi
+    // Khởi tạo dữ liệu mặc định
     private ScoreData CreateDefaultScoreData()
     {
         return new ScoreData
@@ -159,21 +305,18 @@ public class GameManager : MonoBehaviour
         };
     }
 
-    // Đọc dữ liệu JSON từ file
+    // Đọc dữ liệu JSON
     private void LoadScoreData()
     {
         string filePath = Path.Combine(Application.persistentDataPath, scoreFileName);
-
         try
         {
-            // Kiểm tra xem file có tồn tại không
             if (File.Exists(filePath))
             {
                 string json = File.ReadAllText(filePath);
                 if (!string.IsNullOrEmpty(json))
                 {
                     scoreData = JsonUtility.FromJson<ScoreData>(json);
-                    // Kiểm tra xem dữ liệu có hợp lệ không
                     if (scoreData == null || scoreData.scores == null)
                     {
                         Debug.LogWarning("File JSON bị hỏng, tạo dữ liệu mặc định.");
@@ -190,7 +333,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("File JSON không tồn tại, tạo file mới với dữ liệu mặc định.");
+                Debug.Log("File JSON không tồn tại, tạo file mới.");
                 scoreData = CreateDefaultScoreData();
                 SaveScoreData();
             }
@@ -203,24 +346,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Lưu dữ liệu JSON vào file
+    // Lưu dữ liệu JSON
     private void SaveScoreData()
     {
         string filePath = Path.Combine(Application.persistentDataPath, scoreFileName);
-
         try
         {
-            // Đảm bảo scoreData không null
             if (scoreData == null)
             {
-                Debug.LogWarning("ScoreData null, khởi tạo dữ liệu mặc định trước khi lưu.");
+                Debug.LogWarning("ScoreData null, khởi tạo dữ liệu mặc định.");
                 scoreData = CreateDefaultScoreData();
             }
-
-            // Chuyển dữ liệu thành JSON
             string json = JsonUtility.ToJson(scoreData, true);
-
-            // Ghi file
             File.WriteAllText(filePath, json);
             Debug.Log($"Lưu dữ liệu thành công tại: {filePath}");
         }

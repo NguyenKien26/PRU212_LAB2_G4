@@ -1,17 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
-    //--LEVEL 1--//
     [SerializeField] float torqueAmount;
     public int stopTime;
 
     [Header("Speed")]
-    [SerializeField] float slowSpeed;     // tốc độ khi giảm tốc
-    [SerializeField] float boostSpeed;    // tốc độ khi tăng tốc
-    [SerializeField] float defaultSpeed;  // tốc độ bình thường
+    [SerializeField] float slowSpeed;
+    [SerializeField] float boostSpeed;
+    [SerializeField] float defaultSpeed;
 
     [Header("Jump")]
     [SerializeField] float jumpForce;
@@ -20,26 +18,29 @@ public class PlayerController : MonoBehaviour
     float groundCheckRadius = 0.2f;
 
     [Header("Collision")]
-    [SerializeField] float treeSlowDuration = 2f;   // thời gian giảm tốc khi va cây
-    [SerializeField] float rockStopDuration = 1f;   // thời gian dừng khi va đá
+    [SerializeField] float treeSlowDuration = 2f;
+    [SerializeField] float rockStopDuration = 1f;
 
     [Header("Flip")]
-    [SerializeField] float flipDuration = 0.8f;     // Thời gian thực hiện lộn nhào
-    [SerializeField] float flipJumpForce = 2f;      // Lực nhảy nhẹ khi lộn nhào
-    [SerializeField] int flipScore = 100;           // Điểm thưởng khi lộn nhào
+    [SerializeField] float flipDuration = 0.8f;
+    [SerializeField] float flipJumpForce = 2f;
+    [SerializeField] int flipScore = 100;
+
+    [Header("Coin")]
+    [SerializeField] int coinScore = 10;
 
     [Header("Crash Detection")]
-    [SerializeField] float maxHeadAngle = 150f;     // Góc tối đa trước khi coi là cắm đầu (tăng để ít nhạy hơn)
-    [SerializeField] Transform headCheck;           // Vị trí kiểm tra đầu
-    [SerializeField] float headCheckRadius = 0.2f;  // Bán kính kiểm tra va chạm đầu
-    [SerializeField] float crashVelocityThreshold = 8f; // Ngưỡng vận tốc khi va chạm (tăng để chỉ phát hiện va chạm mạnh)
+    [SerializeField] float maxHeadAngle = 150f;
+    [SerializeField] Transform headCheck;
+    [SerializeField] float headCheckRadius = 0.2f;
+    [SerializeField] float crashVelocityThreshold = 8f;
 
     Rigidbody2D rb2d;
     SurfaceEffector2D surfaceEffector;
     bool canMove = true;
-    bool isFlipping = false; // Trạng thái lộn nhào
-    float initialXPosition; // Vị trí X ban đầu
-    float currentDistance; // Khoảng cách hiện tại
+    bool isFlipping = false;
+    float initialXPosition;
+    float currentDistance;
 
     void Start()
     {
@@ -50,11 +51,9 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("SurfaceEffector2D not found in scene!");
         }
 
-        // Lưu vị trí X ban đầu
         initialXPosition = transform.position.x;
         currentDistance = 0f;
 
-        // Set tốc độ mặc định ban đầu
         if (surfaceEffector != null)
         {
             surfaceEffector.speed = defaultSpeed;
@@ -69,8 +68,8 @@ public class PlayerController : MonoBehaviour
             RespondToSpeedControl();
             HandleJump();
             HandleFlip();
-            UpdateDistance();
-            CheckHeadCrash(); // Kiểm tra cắm đầu
+            UpdateDistanceAndSpeed();
+            CheckHeadCrash();
         }
         else if (GameManager.Instance == null)
         {
@@ -135,7 +134,6 @@ public class PlayerController : MonoBehaviour
     bool IsGrounded()
     {
         bool grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        //Debug.Log($"IsGrounded: {grounded}, GroundCheckPos: {groundCheck.position}");
         return grounded;
     }
 
@@ -164,7 +162,6 @@ public class PlayerController : MonoBehaviour
             float t = elapsedTime / flipDuration;
             float currentAngle = Mathf.Lerp(startAngle, endAngle, t);
             transform.eulerAngles = new Vector3(0, 0, currentAngle);
-            Debug.Log($"Flipping: Angle: {currentAngle}, Time: {elapsedTime}/{flipDuration}");
             yield return null;
         }
 
@@ -173,38 +170,34 @@ public class PlayerController : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.AddScore(flipScore);
+            Vector3 flipTextPosition = headCheck != null ? headCheck.position : transform.position + new Vector3(0, 1f, 0);
+            GameManager.Instance.AddScore(flipScore, flipTextPosition, $"+{flipScore} Flip!", Color.cyan);
             Debug.Log($"Flip completed! Earned {flipScore} points.");
-        }
-        else
-        {
-            Debug.LogError("GameManager.Instance is null in PerformFlip!");
         }
     }
 
-    void UpdateDistance()
+    void UpdateDistanceAndSpeed()
     {
         currentDistance = transform.position.x - initialXPosition;
         if (currentDistance < 0) currentDistance = 0;
+
+        float speed = rb2d.linearVelocity.x;
+        if (speed < 0) speed = 0;
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.UpdateDistance(currentDistance);
-        }
-        else
-        {
-            Debug.LogError("GameManager.Instance is null in UpdateDistance!");
+            GameManager.Instance.UpdateSpeed(speed);
         }
     }
 
     void CheckHeadCrash()
     {
-        if (!canMove || isFlipping) return; // Bỏ qua khi đang lộn nhào
+        if (!canMove || isFlipping) return;
 
         float angle = transform.eulerAngles.z;
         if (angle > 180f) angle -= 360f;
         angle = Mathf.Abs(angle);
-
-        //Debug.Log($"Angle: {angle}, IsFlipping: {isFlipping}, IsGrounded: {IsGrounded()}, Velocity: {rb2d.linearVelocity.magnitude}");
 
         if (angle > maxHeadAngle && !IsGrounded())
         {
@@ -217,7 +210,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!canMove) return;
 
-        Debug.Log($"Collision with: {collision.gameObject.name}, Tag: {collision.gameObject.tag}, Layer: {LayerMask.LayerToName(collision.gameObject.layer)}, Velocity: {rb2d.linearVelocity.magnitude}, IsFlipping: {isFlipping}");
+        Debug.Log($"Collision with: {collision.gameObject.name}, Tag: {collision.gameObject.tag}");
 
         if (collision.gameObject.CompareTag("Tree"))
         {
@@ -233,14 +226,18 @@ public class PlayerController : MonoBehaviour
             {
                 GameManager.Instance.ReachFinish(GameManager.Instance.currentScore, currentDistance);
             }
-            else
+        }
+        else if (collision.gameObject.CompareTag("Coin"))
+        {
+            if (GameManager.Instance != null)
             {
-                Debug.LogError("GameManager.Instance is null in OnCollisionEnter2D (Finish)!");
+                Vector3 coinTextPosition = collision.transform.position + new Vector3(0, 0.5f, 0);
+                GameManager.Instance.AddScore(coinScore, coinTextPosition, $"+{coinScore} Coin!", Color.yellow);
+                Destroy(collision.gameObject);
             }
         }
         else if (collision.gameObject.layer == groundLayer.value && !isFlipping)
         {
-            // Kiểm tra va chạm mạnh hoặc cắm đầu
             float velocityMagnitude = rb2d.linearVelocity.magnitude;
             bool headCrash = headCheck != null && Physics2D.OverlapCircle(headCheck.position, headCheckRadius, groundLayer);
             float angle = Mathf.Abs(transform.eulerAngles.z > 180f ? transform.eulerAngles.z - 360f : transform.eulerAngles.z);
@@ -263,10 +260,6 @@ public class PlayerController : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.GameOver(GameManager.Instance.currentScore, currentDistance);
-        }
-        else
-        {
-            Debug.LogError("GameManager.Instance is null in TriggerGameOver!");
         }
         Debug.Log("GameOver triggered.");
     }
