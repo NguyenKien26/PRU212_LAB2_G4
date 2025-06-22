@@ -24,7 +24,6 @@ public class LevelSelector : MonoBehaviour
     {
         if (GameManager.Instance.IsLevelUnlocked(level))
         {
-            GameManager.Instance.currentLevel = level;
             SceneManager.LoadScene("Level" + level.ToString());
         }
     }
