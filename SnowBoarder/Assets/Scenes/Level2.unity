@@ -2045,7 +2045,7 @@ MonoBehaviour:
   currentScore: 0
   currentDistance: 0
   currentSpeed: 0
-  currentLevel: 1
+  currentLevel: 2
 --- !u!4 &351497594
 Transform:
   m_ObjectHideFlags: 0

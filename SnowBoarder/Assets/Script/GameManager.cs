@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public float currentSpeed = 0f;
     public int currentLevel = 1; // Mặc định bắt đầu từ level 1
     private Canvas canvas;
+    private List<Coroutine> activeFloatingTextCoroutines = new List<Coroutine>(); // Lưu các coroutine FloatingText
 
     void Awake()
     {
@@ -53,25 +54,19 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // Tìm Canvas
         canvas = FindObjectOfType<Canvas>();
         if (canvas == null)
         {
-            Debug.LogError("Canvas not found in scene!");
-        }
-
-        LoadScoreData();
-        if (congratText != null)
-        {
-            congratText.gameObject.SetActive(false); // Ẩn CongratText ban đầu
+            Debug.LogWarning("Canvas not found in scene during Awake! Will try to find in Start.");
         }
         else
         {
-            Debug.LogWarning("CongratText is not assigned in Inspector!");
+            DontDestroyOnLoad(canvas.gameObject); // Giữ Canvas khi chuyển scene
         }
 
-        // Kiểm tra các TextMeshProUGUI
+        LoadScoreData();
         CheckTextReferences();
-        UpdateUI();
     }
 
     void Start()
@@ -82,28 +77,56 @@ public class GameManager : MonoBehaviour
             scoreData.playerName = SystemInfo.deviceName;
             SaveScoreData();
         }
+
+        // Thử tìm Canvas lại nếu chưa có
+        if (canvas == null)
+        {
+            canvas = FindObjectOfType<Canvas>();
+            if (canvas != null)
+            {
+                DontDestroyOnLoad(canvas.gameObject);
+                Debug.Log("Canvas found in Start.");
+            }
+            else
+            {
+                Debug.LogError("No Canvas found in scene! Please add a Canvas with TextMeshProUGUI components.");
+            }
+        }
+
+        // Kiểm tra lại các text và cập nhật UI
+        CheckTextReferences();
+        if (congratText != null)
+        {
+            congratText.gameObject.SetActive(false); // Ẩn CongratText ban đầu
+        }
+        UpdateUI();
     }
 
     // Kiểm tra các tham chiếu TextMeshProUGUI
     private void CheckTextReferences()
     {
-        if (scoreText == null) Debug.LogError("ScoreText is not assigned in Inspector!");
-        if (highScoreText == null) Debug.LogError("HighScoreText is not assigned in Inspector!");
-        if (distanceText == null) Debug.LogError("DistanceText is not assigned in Inspector!");
-        if (speedText == null) Debug.LogError("SpeedText is not assigned in Inspector!");
+        if (scoreText == null) Debug.LogError("ScoreText is not assigned in Inspector or not found in scene!");
+        if (highScoreText == null) Debug.LogError("HighScoreText is not assigned in Inspector or not found in scene!");
+        if (distanceText == null) Debug.LogError("DistanceText is not assigned in Inspector or not found in scene!");
+        if (speedText == null) Debug.LogError("SpeedText is not assigned in Inspector or not found in scene!");
+        if (congratText == null) Debug.LogWarning("CongratText is not assigned in Inspector!");
         if (floatingTextPrefab == null) Debug.LogError("FloatingTextPrefab is not assigned in Inspector!");
     }
 
     // Thêm điểm (gọi khi lộn nhào hoặc ăn coin)
     public void AddScore(int points, Vector3 worldPosition, string message, Color color)
     {
-        Debug.Log($"AddScore called with points: {points}, message: {message}, caller: {new System.Diagnostics.StackTrace().ToString()}");
+        Debug.Log($"AddScore called with points: {points}, message: {message}");
         currentScore += points;
         UpdateLevelData(currentLevel, currentScore, currentDistance, false);
         UpdateUI();
         if (canvas != null && floatingTextPrefab != null)
         {
             ShowFloatingText(worldPosition, message, color);
+        }
+        else
+        {
+            Debug.LogWarning("Cannot show FloatingText: Canvas or FloatingTextPrefab is null!");
         }
     }
 
@@ -151,6 +174,12 @@ public class GameManager : MonoBehaviour
     // Hiển thị floating text
     private void ShowFloatingText(Vector3 worldPosition, string message, Color color)
     {
+        if (Camera.main == null)
+        {
+            Debug.LogWarning("Main Camera not found, cannot show FloatingText!");
+            return;
+        }
+
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvas.GetComponent<RectTransform>(),
@@ -159,7 +188,11 @@ public class GameManager : MonoBehaviour
             out Vector2 localPos
         );
         GameObject floatingText = Instantiate(floatingTextPrefab, canvas.transform);
-        floatingText.GetComponent<RectTransform>().localPosition = localPos;
+        RectTransform rectTransform = floatingText.GetComponent<RectTransform>();
+        if (rectTransform != null)
+        {
+            rectTransform.localPosition = localPos;
+        }
         TextMeshProUGUI textComponent = floatingText.GetComponent<TextMeshProUGUI>();
 
         if (textComponent != null)
@@ -167,7 +200,8 @@ public class GameManager : MonoBehaviour
             textComponent.text = message;
             textComponent.color = color;
             floatingText.SetActive(true);
-            StartCoroutine(AnimateFloatingText(floatingText));
+            Coroutine coroutine = StartCoroutine(AnimateFloatingText(floatingText));
+            activeFloatingTextCoroutines.Add(coroutine);
         }
         else
         {
@@ -181,24 +215,47 @@ public class GameManager : MonoBehaviour
         float duration = 1f;
         float elapsed = 0f;
         RectTransform rectTransform = floatingText.GetComponent<RectTransform>();
-        Vector3 startPos = rectTransform.localPosition;
+        Vector3 startPos = rectTransform != null ? rectTransform.localPosition : Vector3.zero;
         Vector3 endPos = startPos + new Vector3(0, 50, 0);
+        TextMeshProUGUI textComponent = floatingText.GetComponent<TextMeshProUGUI>();
 
         while (elapsed < duration)
         {
+            if (floatingText == null || rectTransform == null || textComponent == null)
+            {
+                yield break; // Thoát coroutine nếu object bị hủy
+            }
+
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
             rectTransform.localPosition = Vector3.Lerp(startPos, endPos, t);
-            floatingText.GetComponent<TextMeshProUGUI>().alpha = 1 - t;
+            textComponent.alpha = 1 - t;
             yield return null;
         }
 
-        Destroy(floatingText);
+        if (floatingText != null)
+        {
+            Destroy(floatingText);
+        }
+    }
+
+    // Dừng tất cả coroutine FloatingText
+    private void StopAllFloatingTextCoroutines()
+    {
+        foreach (Coroutine coroutine in activeFloatingTextCoroutines)
+        {
+            if (coroutine != null)
+            {
+                StopCoroutine(coroutine);
+            }
+        }
+        activeFloatingTextCoroutines.Clear();
     }
 
     // Xử lý khi cán đích
     public void ReachFinish(int score, float distance)
     {
+        StopAllFloatingTextCoroutines(); // Dừng các FloatingText trước khi chuyển scene
         UpdateLevelData(currentLevel, score, distance, true);
         currentLevel++;
         if (currentLevel <= 3) // Giả sử có 3 level
@@ -231,14 +288,16 @@ public class GameManager : MonoBehaviour
     // Xử lý khi game over
     public void GameOver(int score, float distance)
     {
+        StopAllFloatingTextCoroutines(); // Dừng các FloatingText trước khi chuyển scene
         UpdateLevelData(currentLevel, score, distance, false);
         SceneManager.LoadScene($"Level{currentLevel}");
         ResetLevel();
     }
 
-    // Reset dữ liệu level
-    private void ResetLevel()
+    // Đặt lại điểm số, khoảng cách, và tốc độ
+    public void ResetScoreAndDistance()
     {
+        Debug.Log("ResetScoreAndDistance called");
         currentScore = 0;
         currentDistance = 0f;
         currentSpeed = 0f;
@@ -247,6 +306,29 @@ public class GameManager : MonoBehaviour
             congratText.gameObject.SetActive(false);
         }
         UpdateUI();
+    }
+
+    // Đặt lại trạng thái người chơi
+    public void ResetPlayer()
+    {
+        Debug.Log("ResetPlayer called in GameManager");
+        PlayerController player = FindFirstObjectByType<PlayerController>();
+        if (player != null)
+        {
+            player.ResetPlayerState();
+        }
+        else
+        {
+            Debug.LogError("PlayerController not found in scene when trying to reset!");
+        }
+    }
+
+    // Reset dữ liệu level
+    private void ResetLevel()
+    {
+        StopAllFloatingTextCoroutines(); // Dừng các FloatingText khi reset level
+        ResetScoreAndDistance();
+        ResetPlayer();
     }
 
     // Cập nhật dữ liệu level

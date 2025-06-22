@@ -92,6 +92,23 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Player disabled.");
     }
 
+    // Đặt lại trạng thái người chơi
+    public void ResetPlayerState()
+    {
+        Debug.Log("ResetPlayerState called in PlayerController");
+        canMove = true;
+        isFlipping = false;
+        if (surfaceEffector != null)
+        {
+            surfaceEffector.speed = defaultSpeed;
+        }
+        rb2d.linearVelocity = Vector2.zero;
+        rb2d.angularVelocity = 0f;
+        transform.rotation = Quaternion.identity; // Đặt lại góc xoay
+        initialXPosition = transform.position.x; // Cập nhật vị trí ban đầu
+        currentDistance = 0f;
+    }
+
     void RotatePlayer()
     {
         if (Input.GetKey(KeyCode.LeftArrow))
@@ -227,15 +244,6 @@ public class PlayerController : MonoBehaviour
                 GameManager.Instance.ReachFinish(GameManager.Instance.currentScore, currentDistance);
             }
         }
-        else if (collision.gameObject.CompareTag("Coin"))
-        {
-            if (GameManager.Instance != null)
-            {
-                Vector3 coinTextPosition = collision.transform.position + new Vector3(0, 0.5f, 0);
-                GameManager.Instance.AddScore(coinScore, coinTextPosition, $"+{coinScore} Coin!", Color.yellow);
-                Destroy(collision.gameObject);
-            }
-        }
         else if (collision.gameObject.layer == groundLayer.value && !isFlipping)
         {
             float velocityMagnitude = rb2d.linearVelocity.magnitude;
@@ -246,6 +254,21 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log($"Crash detected! Velocity: {velocityMagnitude}, HeadCrash: {headCrash}, Angle: {angle}, Triggering GameOver.");
                 TriggerGameOver();
+            }
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!canMove) return;
+
+        if (collision.CompareTag("Coin"))
+        {
+            if (GameManager.Instance != null)
+            {
+                Vector3 coinTextPosition = collision.transform.position + new Vector3(0, 0.5f, 0);
+                GameManager.Instance.AddScore(coinScore, coinTextPosition, $"+{coinScore} Coin!", Color.yellow);
+                Destroy(collision.gameObject);
             }
         }
     }
