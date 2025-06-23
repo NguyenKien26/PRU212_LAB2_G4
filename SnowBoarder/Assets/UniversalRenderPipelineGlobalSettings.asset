@@ -59,8 +59,13 @@ MonoBehaviour:
       - rid: 6506171295624855553
       - rid: 6506171295624855554
       - rid: 6506171295624855555
+<<<<<<< Updated upstream
       - rid: 6627201310754865152
       - rid: 6627201310754865153
+=======
+      - rid: 6627201310754865154
+      - rid: 6627201310754865155
+>>>>>>> Stashed changes
     m_RuntimeSettings:
       m_List: []
   m_AssetVersion: 8
@@ -177,12 +182,20 @@ MonoBehaviour:
         uberPostPS: {fileID: 4800000, guid: e7857e9d0c934dc4f83f270f8447b006, type: 3}
         finalPostPassPS: {fileID: 4800000, guid: c49e63ed1bbcb334780a3bd19dfed403, type: 3}
         m_ShaderResourcesVersion: 0
+<<<<<<< Updated upstream
     - rid: 6627201310754865152
+=======
+    - rid: 6627201310754865154
+>>>>>>> Stashed changes
       type: {class: LightmapSamplingSettings, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
         m_Version: 1
         m_UseBicubicLightmapSampling: 0
+<<<<<<< Updated upstream
     - rid: 6627201310754865153
+=======
+    - rid: 6627201310754865155
+>>>>>>> Stashed changes
       type: {class: VrsRenderPipelineRuntimeResources, ns: UnityEngine.Rendering, asm: Unity.RenderPipelines.Core.Runtime}
       data:
         m_TextureComputeShader: {fileID: 7200000, guid: cacb30de6c40c7444bbc78cb0a81fd2a, type: 3}
