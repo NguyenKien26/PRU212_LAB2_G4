@@ -1,5 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -7,6 +8,21 @@ public class MainMenu : MonoBehaviour
     public GameObject optionButton;
     public GameObject howToPlayPanel;
     public GameObject howToPlayButton;
+    public AudioSource uiAudioSource;       
+    public AudioClip clickSound;
+
+    void Start()
+    {
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        foreach (var btn in buttons)
+        {
+            btn.onClick.AddListener(() =>
+            {
+                if (uiAudioSource != null && clickSound != null)
+                    uiAudioSource.PlayOneShot(clickSound);
+            });
+        }
+    }
 
     public void StartGame()
     {
