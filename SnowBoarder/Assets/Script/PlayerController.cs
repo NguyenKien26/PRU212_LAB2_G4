@@ -32,12 +32,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float headCheckRadius = 0.2f;
     [SerializeField] float crashVelocityThreshold = 8f;
 
+    [Header("Slide Sound Effects")]
+    public AudioSource gliderLoopSource; 
+    public AudioClip snowGlider;
+
+
+    [Header("Sound Effects")]
+    public AudioSource sfxSource;
+    public AudioClip snowJump;
+    public AudioClip snowLand;
+    public AudioClip backFlip;
+    public AudioClip snowBoost;
+
     Rigidbody2D rb2d;
     SurfaceEffector2D surfaceEffector;
     bool canMove = true;
     bool isFlipping = false;
     float initialXPosition;
     float currentDistance;
+    bool wasGroundedLastFrame = true;
 
     void Start()
     {
@@ -61,15 +74,36 @@ public class PlayerController : MonoBehaviour
     {
         if (canMove && GameManager.Instance != null)
         {
-            if (!isFlipping) RotatePlayer();
-            RespondToSpeedControl();
-            HandleJump();
-            HandleFlip();
-            UpdateDistance();
-            CheckHeadCrash();
+            if (canMove && GameManager.Instance != null)
+            {
+                if (!isFlipping) RotatePlayer();
+                RespondToSpeedControl();
+                HandleJump();
+                HandleFlip();
+                UpdateDistance();
+                CheckHeadCrash();
 
-            // Cập nhật tốc độ cho GameManager
-            if (surfaceEffector != null)
+                bool isGroundedNow = IsGrounded();
+
+                if (!wasGroundedLastFrame && isGroundedNow)
+                {
+                    sfxSource.PlayOneShot(snowLand);
+                }
+
+                if (isGroundedNow && !gliderLoopSource.isPlaying)
+                {
+                    gliderLoopSource.clip = snowGlider;
+                    gliderLoopSource.Play();
+                }
+                else if (!isGroundedNow && gliderLoopSource.isPlaying)
+                {
+                    gliderLoopSource.Stop();
+                }
+
+                wasGroundedLastFrame = isGroundedNow;
+            }
+                // Cập nhật tốc độ cho GameManager
+                if (surfaceEffector != null)
             {
                 GameManager.Instance.UpdateSpeed(surfaceEffector.speed);
                 Debug.Log($"Updating speed: {surfaceEffector.speed}");
@@ -115,6 +149,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             surfaceEffector.speed = boostSpeed;
+            sfxSource.PlayOneShot(snowBoost, 0.1f);
         }
         else if (Input.GetKey(KeyCode.C))
         {
@@ -131,6 +166,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
         {
             rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            sfxSource.PlayOneShot(snowJump);
             Debug.Log("Jump performed.");
         }
     }
@@ -154,6 +190,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Starting flip.");
 
         rb2d.AddForce(Vector2.up * flipJumpForce, ForceMode2D.Impulse);
+        sfxSource.PlayOneShot(backFlip);
 
         float startAngle = transform.eulerAngles.z;
         float endAngle = startAngle + 360f;
@@ -253,7 +290,6 @@ public class PlayerController : MonoBehaviour
         {
             surfaceEffector.speed = 0f;
         }
-
         if (GameManager.Instance != null)
         {
             GameManager.Instance.GameOver(GameManager.Instance.currentScore, currentDistance);

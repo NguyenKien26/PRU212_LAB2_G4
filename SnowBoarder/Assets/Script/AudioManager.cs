@@ -4,6 +4,9 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
+    public AudioSource sfxAudioSource;
+    public AudioClip clickClip;
+
 
     public AudioMixer audioMixer;
 
@@ -17,19 +20,33 @@ public class AudioManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
     }
 
     void Start()
     {
+        LoadVolumeSettings();
+    }
 
-        float masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
-        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
-        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+    public void SetVolume(string parameter, float volume)
+    {
+        float dB = Mathf.Log10(Mathf.Clamp(volume, 0.0001f, 1f)) * 20f;
+        audioMixer.SetFloat(parameter, dB);
 
-        // Gán vào AudioMixer
-        audioMixer.SetFloat("MasterVolume", Mathf.Log10(Mathf.Clamp(masterVolume, 0.0001f, 1f)) * 20);
-        audioMixer.SetFloat("MusicVolume", Mathf.Log10(Mathf.Clamp(musicVolume, 0.0001f, 1f)) * 20);
-        audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Clamp(sfxVolume, 0.0001f, 1f)) * 20);
+        PlayerPrefs.SetFloat(parameter, volume);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadVolumeSettings()
+    {
+        SetVolume("MasterVolume", PlayerPrefs.GetFloat("MasterVolume", 1f));
+        SetVolume("MusicVolume", PlayerPrefs.GetFloat("MusicVolume", 1f));
+        SetVolume("SFXVolume", PlayerPrefs.GetFloat("SFXVolume", 1f));
+    }
+    public void PlayClickSound()
+    {
+        audioMixer.SetFloat("SFXVolume", Mathf.Log10(Mathf.Clamp(PlayerPrefs.GetFloat("SFXVolume", 1f), 0.0001f, 1f)) * 20f);
+        sfxAudioSource.PlayOneShot(clickClip);
     }
 }
