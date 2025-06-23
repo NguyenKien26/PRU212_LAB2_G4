@@ -5622,14 +5622,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnerPrefab: {fileID: 7844911759471448344, guid: 2ed8425eb08b05c4695e80b795fd0e3d, type: 3}
-  baseSpawnDistance: 2
-  spawnRange: 0.5
-  speedFactor: 1
+  baseSpawnDistance: 20
+  spawnRange: 0.3
+  speedFactor: 6
   yOffset: 0.5
-  minSpawnInterval: 2
-  maxSpawnInterval: 5
-  maxSpawners: 5
-  maxPredictionDistance: 3
+  minSpawnInterval: 0.05
+  maxSpawnInterval: 0.15
+  maxSpawners: 8
+  maxPredictionDistance: 20
+  maxCoinsPerSecond: 30
+  poolSize: 10
 --- !u!4 &212534202
 Transform:
   m_ObjectHideFlags: 0
@@ -39061,6 +39063,10 @@ PrefabInstance:
       propertyPath: pauseButton
       value: 
       objectReference: {fileID: 530655533}
+    - target: {fileID: 4706241045549755600, guid: 211e7c87faf9e014d81d86e202b755f8, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 6962405292842802327, guid: 211e7c87faf9e014d81d86e202b755f8, type: 3}
       propertyPath: m_Name
       value: WinPanelManager

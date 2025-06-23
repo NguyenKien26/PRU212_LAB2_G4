@@ -6,7 +6,7 @@ public class Coin : MonoBehaviour
 
     void Start()
     {
-        Debug.Log($"Coin spawned at position: {transform.position}, Layer: {LayerMask.LayerToName(gameObject.layer)}, Tag: {gameObject.tag}");
+        Debug.Log($"Coin spawned at position: {transform.position}, Active: {gameObject.activeSelf}, Layer: {LayerMask.LayerToName(gameObject.layer)}, Tag: {gameObject.tag}");
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr == null || sr.sprite == null)
         {
@@ -17,7 +17,7 @@ public class Coin : MonoBehaviour
             Debug.Log($"Coin sprite active: {sr.enabled}, color: {sr.color}");
         }
 
-        // Tìm tất cả các coin khác và bỏ qua va chạm, không sắp xếp để tăng tốc
+        // Tìm tất cả các coin khác và bỏ qua va chạm
         Coin[] allCoins = FindObjectsByType<Coin>(FindObjectsSortMode.None);
         foreach (Coin otherCoin in allCoins)
         {
@@ -36,7 +36,7 @@ public class Coin : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Coin triggered by: {other.gameObject.name}, Tag: {other.tag}, Layer: {LayerMask.LayerToName(other.gameObject.layer)}, Coin Position: {transform.position}");
+        Debug.Log($"Coin triggered by: {other.gameObject.name}, Tag: {other.tag}, Layer: {LayerMask.LayerToName(other.gameObject.layer)}, Coin Position: {transform.position}, Active: {gameObject.activeSelf}");
         if (other.CompareTag("Player"))
         {
             if (GameManager.Instance != null)
@@ -44,13 +44,24 @@ public class Coin : MonoBehaviour
                 Transform head = other.transform.Find("Head");
                 Vector3 position = head != null ? head.position : other.transform.position + Vector3.up * 0.7f;
                 GameManager.Instance.AddScore(coinScore, position, $"+{coinScore}", Color.yellow);
-                Debug.Log($"Coin collected by Player! Added {coinScore} points at position {position}, Coin will be destroyed.");
+                Debug.Log($"Coin collected by Player! Added {coinScore} points at position {position}");
+
+                // Ẩn coin thay vì destroy, và thông báo cho CoinSpawnerManager
+                gameObject.SetActive(false);
+                CoinSpawnerManager manager = FindObjectOfType<CoinSpawnerManager>();
+                if (manager != null)
+                {
+                    manager.OnCoinCollected();
+                }
+                else
+                {
+                    Debug.LogError("CoinSpawnerManager not found!");
+                }
             }
             else
             {
                 Debug.LogError("GameManager.Instance is null in Coin!");
             }
-            Destroy(gameObject);
         }
         else
         {
