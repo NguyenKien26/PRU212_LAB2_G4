@@ -9,7 +9,7 @@ public class PauseButtonHandler : MonoBehaviour
         pauseManager = Object.FindFirstObjectByType<PauseManager>();
         if (pauseManager == null)
         {
-            Debug.LogError("PauseManager không t?m th?y. Ð?m b?o nó ðang t?n t?i và có DontDestroyOnLoad.");
+            Debug.LogError("PauseManager không tim thay. Ðam bao nó dang tin t?i và có DontDestroyOnLoad.");
         }
     }
 
