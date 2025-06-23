@@ -8,13 +8,11 @@ public class Coin : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Phát âm thanh nếu có
             if (collectSFX != null)
             {
                 AudioSource.PlayClipAtPoint(collectSFX, Camera.main.transform.position);
             }
 
-            // Xoá coin
             Destroy(gameObject);
         }
     }
