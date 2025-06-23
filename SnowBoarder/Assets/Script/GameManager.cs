@@ -64,10 +64,10 @@ public class GameManager : MonoBehaviour
         {
             Debug.LogWarning("Canvas not found in scene during Awake! Will try to find in Start.");
         }
-        else
-        {
-            DontDestroyOnLoad(canvas.gameObject);
-        }
+        //else
+        //{
+        //    DontDestroyOnLoad(canvas.gameObject);
+        //}
 
         LoadScoreData();
         CheckTextReferences();
@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
             canvas = FindFirstObjectByType<Canvas>();
             if (canvas != null)
             {
-                DontDestroyOnLoad(canvas.gameObject);
+                //DontDestroyOnLoad(canvas.gameObject);
                 Debug.Log("Canvas found in Start.");
             }
             else
