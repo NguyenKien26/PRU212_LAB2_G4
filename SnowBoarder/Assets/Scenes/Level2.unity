@@ -7557,8 +7557,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreFileName: scores.json
   scorePerMeter: 10
-  scoreText: {fileID: 0}
-  distanceText: {fileID: 0}
+  scoreText: {fileID: 5079899345491030680}
+  distanceText: {fileID: 5079899345491030679}
   speedText: {fileID: 0}
   floatingTextPrefab: {fileID: 0}
   slowSpeedThreshold: 5
@@ -34411,6 +34411,28 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+--- !u!114 &5079899345491030679 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2207257258757731239, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+  m_PrefabInstance: {fileID: 5079899345491030678}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5079899345491030680 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3769961114879987478, guid: d848be6b499e362409c6c2f1ecc79075, type: 3}
+  m_PrefabInstance: {fileID: 5079899345491030678}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

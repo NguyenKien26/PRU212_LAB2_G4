@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class FinishLine : MonoBehaviour
@@ -16,7 +16,7 @@ public class FinishLine : MonoBehaviour
             finishEffect?.Play();
             GetComponent<AudioSource>()?.Play();
 
-            // �?i m?t ch�t r?i hi?n panel win
+            // đợi 1 xíu r hiện panel win
             Invoke(nameof(ShowWinPanel), delayTime);
         }
     }
@@ -29,7 +29,7 @@ public class FinishLine : MonoBehaviour
         if (winPanel != null)
         {
             winPanel.ShowWinPanel();
-            Time.timeScale = 0f; // T?m d?ng game
+            Time.timeScale = 0f; // pause game.
         }
         else
         {

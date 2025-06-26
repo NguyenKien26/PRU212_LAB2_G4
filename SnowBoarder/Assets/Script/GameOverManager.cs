@@ -43,6 +43,9 @@ public class GameOverManager : MonoBehaviour
         Debug.Log("RetryLevel called");
         Time.timeScale = 1f;
 
+        // Reset TMP UI
+        ResetUI();
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ResetScoreAndDistance();
@@ -60,12 +63,26 @@ public class GameOverManager : MonoBehaviour
         }
     }
 
-
-
-
     public void ReturnToMenu()
     {
+        Debug.Log("ReturnToMenu called");
         Time.timeScale = 1f;
+
+        // Reset TMP UI
+        ResetUI();
+
         SceneManager.LoadScene("MenuScene");
+    }
+
+    private void ResetUI()
+    {
+        gameOverPanel.SetActive(false);
+        if (scoreText != null)
+            scoreText.text = "Score: 0";
+        if (distanceText != null)
+            distanceText.text = "Distance: 0.0m";
+        if (pauseButton != null)
+            pauseButton.gameObject.SetActive(true);
+        Debug.Log("UI reset: GameOver panel hidden, score and distance text cleared.");
     }
 }

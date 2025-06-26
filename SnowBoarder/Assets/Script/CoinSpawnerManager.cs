@@ -7,12 +7,12 @@ public class CoinSpawnerManager : MonoBehaviour
 
     [Header("Spawn Settings")]
     [SerializeField] private float triggerZoneDistance = 30.0f; // Tăng để giảm mật độ
-    [SerializeField] private float baseSpawnDistance = 10.0f; // Giữ khoảng cách hợp lý
+    [SerializeField] private float baseSpawnDistance = 10.0f; 
     [SerializeField] private float spawnRange = 5.0f; // Phạm vi ngẫu nhiên
     [SerializeField] private float yOffset = 0.2f; // Độ cao hợp lý
     [SerializeField] private int maxSpawners = 5;
     [SerializeField] private int maxCoinsPerZone = 1; // Giới hạn 1 coin mỗi vùng
-    [SerializeField] private int maxCoinsOnScreen = 15; // Tăng để bao phủ đoạn đua
+    [SerializeField] private int maxCoinsOnScreen = 15;
 
     private Transform playerTransform;
     private PlayerController playerController;

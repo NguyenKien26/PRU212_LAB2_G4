@@ -46,9 +46,10 @@ public class Coin : MonoBehaviour
                 GameManager.Instance.AddScore(coinScore, position, $"+{coinScore}", Color.yellow);
                 Debug.Log($"Coin collected by Player! Added {coinScore} points at position {position}");
 
-                // Ẩn coin thay vì destroy, và thông báo cho CoinSpawnerManager
+                //ẩn coin đi.
                 gameObject.SetActive(false);
-                CoinSpawnerManager manager = FindObjectOfType<CoinSpawnerManager>();
+                CoinSpawnerManager manager = FindFirstObjectByType<CoinSpawnerManager>();
+                
                 if (manager != null)
                 {
                     manager.OnCoinCollected();

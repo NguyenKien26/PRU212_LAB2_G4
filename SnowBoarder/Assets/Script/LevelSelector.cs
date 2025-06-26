@@ -17,7 +17,7 @@ public class LevelSelector : MonoBehaviour
         // Kiểm tra trạng thái khóa/mở
         bool isUnlocked = GameManager.Instance.IsLevelUnlocked(level);
         button.interactable = isUnlocked;
-        levelText.alpha = isUnlocked ? 1f : 0.5f; // Làm mờ text nếu khóa
+        levelText.alpha = isUnlocked ? 1f : 0.5f; // Làm mờ text nếu khóa màn (JSON k có data)
     }
 
     public void OpenScene()

@@ -32,11 +32,11 @@ public class CoinSpawner : MonoBehaviour
                 GameObject coin = Instantiate(coinPrefab, spawnPos, Quaternion.identity);
                 if (coin != null)
                 {
-                    coin.SetActive(true); // Đảm bảo coin được enable
+                    coin.SetActive(true); // enable
                     SpriteRenderer sr = coin.GetComponent<SpriteRenderer>();
                     if (sr != null)
                     {
-                        sr.enabled = true; // Đảm bảo SpriteRenderer được bật
+                        sr.enabled = true; 
                         Debug.Log($"Coin spawned at {spawnPos}, active state: {coin.activeSelf}, sprite enabled: {sr.enabled}");
                     }
                     else
